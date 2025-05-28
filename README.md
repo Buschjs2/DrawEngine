@@ -45,14 +45,14 @@ DrawEngine is a modern web application for Magic: The Gathering players to build
 
 **Frontend**
 ```bash
-cd manabase-frontend
+cd drawengine-frontend
 npm install
 npm run dev
 ```
 
 **Backend**
 ```bash
-cd manabase-backend
+cd drawengine-backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
@@ -65,15 +65,15 @@ Make sure PostgreSQL is running locally and the connection string is properly co
 
 ```text
 /drawengine
-├── manabase-frontend/     # React + Tailwind app
-└── manabase-backend/      # FastAPI + PostgreSQL server
+├── drawengine-frontend/     # React + Tailwind app
+└── drawengine-backend/      # FastAPI + PostgreSQL server
 ```
 
 ## Roadmap
 
-- [x] Deck import and display
-- [x] Real-time filtering and sorting
-- [x] Pricing and card preview
+- [ ] Deck import and display
+- [ ] Real-time filtering and sorting
+- [ ] Pricing and card preview
 - [ ] Collection tracking
 - [ ] User authentication
 - [ ] ML-powered card suggestions
