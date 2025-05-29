@@ -1,0 +1,57 @@
+// src/pages/Register.jsx
+import React, { useState } from "react";
+import API from "../api";
+import { useNavigate } from "react-router-dom";
+
+export default function Register() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ username: "", email: "", password: "" });
+
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await API.post("/register", formData);
+      alert("Registration successful! You can now log in.");
+      navigate("/login");
+    } catch (err) {
+      alert("Registration failed.");
+      console.error(err);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      <form className="w-96 space-y-4" onSubmit={handleSubmit}>
+        <h2 className="text-2xl font-bold">Register</h2>
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          required
+          className="w-full p-2 text-black"
+          onChange={handleChange}
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          required
+          className="w-full p-2 text-black"
+          onChange={handleChange}
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+          className="w-full p-2 text-black"
+          onChange={handleChange}
+        />
+        <button className="bg-blue-600 px-4 py-2 rounded w-full">Sign Up</button>
+      </form>
+    </div>
+  );
+}

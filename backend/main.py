@@ -1,19 +1,22 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routers import users
+from database import engine
+from models import Base
 
-# Create the FastAPI app
+# Initialize DB tables
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
 
-# Add CORS middleware to allow frontend access
+# CORS config to allow frontend access
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Frontend dev server
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Example test route
-@app.get("/test-db")
-def test_db():
-    return {"message": "Backend is connected and CORS is working!"}
+# Include user auth routes
+app.include_router(users.router)
