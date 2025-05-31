@@ -21,38 +21,26 @@ def get_db():
 
 @router.post("/register", response_model=UserOut)
 def register(user: UserCreate, db: Session = Depends(get_db)):
-    # Check password confirmation
     if user.password != user.confirm_password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={"field": "confirm_password", "message": "Passwords do not match."}
         )
 
-    # Check if username already exists
     if db.query(User).filter(User.username == user.username).first():
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail={"field": "username", "message": "Username is already taken."}
         )
 
-    # Check if email already exists
     if db.query(User).filter(User.email == user.email).first():
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail={"field": "email", "message": "Email is already registered. Please log in instead."}
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"field": "email", "message": "Email is already registered."}
         )
 
-    # Create user
-    hashed_password = get_password_hash(user.password)
-    new_user = User(
-        username=user.username,
-        email=user.email,
-        hashed_password=hashed_password
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+    db_user = create_user(db=db, user=user)
+    return db_user
 
 
 @router.post("/login", response_model=Token)

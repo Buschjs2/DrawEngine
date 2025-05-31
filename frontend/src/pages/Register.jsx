@@ -12,10 +12,11 @@ export default function Register() {
   });
 
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // Clear error when editing
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const handleSubmit = async (e) => {
@@ -32,10 +33,24 @@ export default function Register() {
       navigate("/login");
     } catch (err) {
       const detail = err.response?.data?.detail;
-      if (detail?.field && detail?.message) {
+
+      if (typeof detail === "object" && detail.field && detail.message) {
         setErrors({ [detail.field]: detail.message });
+
+        // Prompt if email is already registered
+        if (
+          detail.field === "email" &&
+          detail.message.toLowerCase().includes("already")
+        ) {
+          const shouldLogin = window.confirm(
+            "This email is already registered. Would you like to log in instead?"
+          );
+          if (shouldLogin) {
+            navigate("/login");
+          }
+        }
       } else {
-        alert("Registration failed due to a server error.");
+        alert("Registration failed. Please try again.");
         console.error(err);
       }
     }
@@ -49,60 +64,94 @@ export default function Register() {
       >
         <h2 className="text-3xl font-bold text-center">Register</h2>
 
+        {/* Username */}
         <div>
           <input
             type="text"
             name="username"
             placeholder="Username"
-            required
-            className="w-full p-2 rounded bg-white text-earth-dark"
+            value={formData.username}
             onChange={handleChange}
+            className={`w-full p-2 border rounded ${
+              errors.username ? "border-red-500" : "border-gray-300"
+            }`}
           />
-          {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
+          {errors.username && (
+            <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+          )}
         </div>
 
+        {/* Email */}
         <div>
           <input
             type="email"
             name="email"
             placeholder="Email"
-            required
-            className="w-full p-2 rounded bg-white text-earth-dark"
+            value={formData.email}
             onChange={handleChange}
+            className={`w-full p-2 border rounded ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            }`}
           />
-          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+          )}
         </div>
 
+        {/* Password */}
         <div>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             placeholder="Password"
-            required
-            className="w-full p-2 rounded bg-white text-earth-dark"
+            value={formData.password}
             onChange={handleChange}
+            className={`w-full p-2 border rounded ${
+              errors.password ? "border-red-500" : "border-gray-300"
+            }`}
           />
+          {errors.password && (
+            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+          )}
         </div>
 
+        {/* Confirm Password */}
         <div>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="confirm_password"
             placeholder="Confirm Password"
-            required
-            className="w-full p-2 rounded bg-white text-earth-dark"
+            value={formData.confirm_password}
             onChange={handleChange}
+            className={`w-full p-2 border rounded ${
+              errors.confirm_password ? "border-red-500" : "border-gray-300"
+            }`}
           />
           {errors.confirm_password && (
-            <p className="text-red-500 text-sm mt-1">{errors.confirm_password}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.confirm_password}
+            </p>
           )}
+        </div>
+
+        {/* Show Password Checkbox */}
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="showPassword"
+            checked={showPassword}
+            onChange={() => setShowPassword(!showPassword)}
+          />
+          <label htmlFor="showPassword" className="text-sm">
+            Show Password
+          </label>
         </div>
 
         <button
           type="submit"
-          className="bg-earth-soft hover:bg-earth-tan text-white py-2 px-4 rounded w-full transition"
+          className="w-full py-3 text-lg font-bold rounded bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition duration-300 ease-in-out"
         >
-          Sign Up
+          Register
         </button>
       </form>
     </div>

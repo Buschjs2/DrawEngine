@@ -1,25 +1,41 @@
-// src/pages/Login.jsx
 import React, { useState } from "react";
 import API from "../api";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ username_or_email: "", password: "" });
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
 
-  const handleChange = (e) =>
+  const [errors, setErrors] = useState({});
+  const [loginError, setLoginError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
+    setLoginError("");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await API.post("/login", formData);
-      localStorage.setItem("token", res.data.access_token);
-      alert("Logged in successfully!");
-      navigate("/"); // Redirect to home or dashboard
+      const response = await API.post("/login", formData);
+      const token = response.data.access_token;
+      localStorage.setItem("token", token);
+      alert("Login successful!");
+      navigate("/"); // Change to your dashboard/home
     } catch (err) {
-      alert("Login failed.");
-      console.error(err);
+      const detail = err.response?.data?.detail;
+
+      if (typeof detail === "string") {
+        setLoginError(detail);
+      } else {
+        setLoginError("Login failed. Please check your username and password.");
+      }
     }
   };
 
@@ -30,25 +46,62 @@ export default function Login() {
         className="bg-earth-card w-full max-w-md p-8 rounded-xl shadow-2xl space-y-5"
       >
         <h2 className="text-3xl font-bold text-center">Login</h2>
-        <input
-          type="text"
-          name="username_or_email"
-          placeholder="Username or Email"
-          required
-          className="w-full p-2 rounded bg-white text-earth-dark focus:outline-none focus:ring-2 focus:ring-earth-soft"
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          required
-          className="w-full p-2 rounded bg-white text-earth-dark focus:outline-none focus:ring-2 focus:ring-earth-soft"
-          onChange={handleChange}
-        />
+
+        {/* Username */}
+        <div>
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={formData.username}
+            onChange={handleChange}
+            className={`w-full p-2 border rounded ${
+              errors.username ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {errors.username && (
+            <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+          )}
+        </div>
+
+        {/* Password */}
+        <div>
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            className={`w-full p-2 border rounded ${
+              errors.password ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {errors.password && (
+            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+          )}
+        </div>
+
+        {/* Show Password Toggle */}
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="showPassword"
+            checked={showPassword}
+            onChange={() => setShowPassword(!showPassword)}
+          />
+          <label htmlFor="showPassword" className="text-sm">
+            Show Password
+          </label>
+        </div>
+
+        {/* General Login Error */}
+        {loginError && (
+          <p className="text-red-500 text-sm text-center">{loginError}</p>
+        )}
+
         <button
           type="submit"
-          className="bg-earth-dark hover:bg-earth-soft text-white py-2 px-4 rounded w-full transition"
+          className="w-full py-3 text-lg font-bold rounded bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition duration-300 ease-in-out"
         >
           Login
         </button>
