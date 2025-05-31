@@ -8,12 +8,15 @@ class UserBase(BaseModel):
 
 # User creation input
 class UserCreate(UserBase):
+    username: str
     email: EmailStr
     password: str
+    confirm_password: str
+    # Ensure password and confirm password match
     
 # User login input
 class UserLogin(BaseModel):
-    email: EmailStr
+    username_or_email: str
     password: str
     
 # User Output

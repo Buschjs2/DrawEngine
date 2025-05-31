@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({ username_or_email: "", password: "" });
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -13,7 +13,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await API.post("/login", new URLSearchParams(formData));
+      const res = await API.post("/login", formData);
       localStorage.setItem("token", res.data.access_token);
       alert("Logged in successfully!");
       navigate("/"); // Redirect to home or dashboard
@@ -24,15 +24,18 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
-      <form className="w-96 space-y-4" onSubmit={handleSubmit}>
-        <h2 className="text-2xl font-bold">Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-earth-base text-earth-dark p-6">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-earth-card w-full max-w-md p-8 rounded-xl shadow-2xl space-y-5"
+      >
+        <h2 className="text-3xl font-bold text-center">Login</h2>
         <input
           type="text"
-          name="username"
-          placeholder="Email"
+          name="username_or_email"
+          placeholder="Username or Email"
           required
-          className="w-full p-2 text-black"
+          className="w-full p-2 rounded bg-white text-earth-dark focus:outline-none focus:ring-2 focus:ring-earth-soft"
           onChange={handleChange}
         />
         <input
@@ -40,10 +43,15 @@ export default function Login() {
           name="password"
           placeholder="Password"
           required
-          className="w-full p-2 text-black"
+          className="w-full p-2 rounded bg-white text-earth-dark focus:outline-none focus:ring-2 focus:ring-earth-soft"
           onChange={handleChange}
         />
-        <button className="bg-green-600 px-4 py-2 rounded w-full">Login</button>
+        <button
+          type="submit"
+          className="bg-earth-dark hover:bg-earth-soft text-white py-2 px-4 rounded w-full transition"
+        >
+          Login
+        </button>
       </form>
     </div>
   );
